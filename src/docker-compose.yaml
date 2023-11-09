@@ -1,0 +1,30 @@
+version: '3.9'
+name: devs
+
+services:
+
+  local_db:
+    container_name: local_db
+    image: postgres
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 20s
+      timeout: 60s
+      retries: 5
+    ports:
+      - ${POSTGRES_ACCESS_PORT}:5432
+    environment: # <- Works this way
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+
+  local_pgadmin:
+    container_name: local_pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - ${PGADMIN_ACCESS_PORT}:80
+    environment: # <- Also works this way
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    volumes:
+      - ${PGADMIN_SERVERS_FILE}:/pgadmin4/servers.json
